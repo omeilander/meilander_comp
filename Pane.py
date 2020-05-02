@@ -10,7 +10,7 @@ import numpy as np
 s = 0
 
 class Pane(object):
-    def __init__(self, location, density, thickness, dt, verbose = False):
+    def __init__(self, location, density, thickness, dt, verbose = 0):
         self.points = np.array(location)
         self.den = density
         self.thick = thickness
@@ -53,8 +53,10 @@ class Pane(object):
             velHat = vel / velMag
         dot = np.dot(velHat, nHat)
         
-        if (self.verbose == True):
-            print("In calcForceResistive, vel={}, nHat={}".format(vel, nHat))
+        if (self.verbose >= 3):
+            print("In calcForceResistive, vel=[{:.3g}, {:.3g}, {:.3g}], "
+                  "nHat=[{:6.3f}, {:6.3f}, {:6.3f}]"
+                  .format(vel[0], vel[1], vel[2], nHat[0], nHat[1], nHat[2]))
         
         if dot <= 0:
             return np.zeros(3)

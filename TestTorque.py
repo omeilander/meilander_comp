@@ -16,30 +16,56 @@ from matplotlib import pyplot as plt
 
 
 def main():
-    verbose = False
-#    verbose = True
+    verbose = 0
     
     den = 1
     thick = .1
     dt = .01
     r = np.array((0., 0., 0.))
     vo = np.array((0., 0., 0.))
-    ang = np.array((.1, 0.))
-    
-    mf = 10.
+    ang = np.array((.5, 0.))
+
+    tend = 10.
     burnTime = 60.
-    thrust = 118.
+    # burnTime = 60.
+    # thrust = 118.
+    # thrust = 180.
     
-    pains, fuelCM = maybegood(den, thick, dt, verbose)
+    pains, fuelCM, frameCM, framemass = maybegood(den, thick, dt, verbose)
+    print("Out of maybegood, fuelCM={}, frameCM={}, framemass={}".format(fuelCM, frameCM, framemass))
+    
+    mf = 2. * framemass
+    thrust = 1.05 * (framemass + mf) * 9.8
+
+    painvis = None
+    
+    import PainVisualizer
+    painvis = PainVisualizer.PaneVisualizer(pains)
+    painvis.show()
     
     fuel = FuelTank(fuelCM, mf, burnTime, thrust)
 
     air = Air(vo, r)
     
     pointy = Object(pains, air, fuel, dt, ang, verbose)
+
+    print("Initialized rocket.  Structure mass = {:.3g}, fuel mass = {:.3g}, tot mass = {:.3g}"
+          .format(framemass, fuel.mf, pointy.mTot()))
+    CMframe = pointy.calcCMTotPane()
+    CMtot = pointy.calcCMTot()
+    print("CoM of structure: [{:.3g}, {:.3g}, {:.3g}], overall: [{:.3g}, {:.3g}, {:.3g}]"
+          .format(CMframe[0], CMframe[1], CMframe[2], CMtot[0], CMtot[1], CMtot[2]))
     
-    rk4 = RungeKutter(pointy)
-    sols = rk4.solve(10, nkeep=30000)
+    rk4 = RungeKutter(pointy, verbose=verbose)
+    sols = rk4.solve(tend, nkeep=3000)
+
+    if painvis is not None:
+        lastsols = sols[-1]
+        v = np.array( lastsols[4:7] )
+        theta = lastsols[7]
+        omega = lastsols[8]
+        painvis.vectorify(pointy, v, theta, omega)
+        
     
     #Fr = pointy.fResistive_List
     
@@ -100,17 +126,17 @@ def maybegood(den, thick, dt, verbose):
     fuelCM = np.array((0., 1., 0.))
     
     points = np.empty((11,3))
-    points[0] = np.array((0., 4., 0.))
+    points[0] = np.array((0., 20., 0.))
     points[1] = np.array((1., 1., 1.))
     points[2] = np.array((1., 1., -1.))
     points[3] = np.array((1., 0., 0.))
     points[4] = np.array((-1., 1., 1.))
     points[5] = np.array((-1., 1., -1.))
     points[6] = np.array((-1., 0., 0.))
-    points[7] = np.array((-2., -1., 3.))
-    points[8] = np.array((-2., -1., -3.))
-    points[9] = np.array((2., -1., 3.))
-    points[10] = np.array((2., -1., -3.))
+    points[7] = np.array((-4., -5., 3.))
+    points[8] = np.array((-4., -5., -3.))
+    points[9] = np.array((4., -5., 3.))
+    points[10] = np.array((4., -5., -3.))
     
         
         
@@ -121,7 +147,18 @@ def maybegood(den, thick, dt, verbose):
     pains.append(Pain(np.array((points[4], points[5], points[6])), den, thick, dt, verbose))
     pains.append(Pain(np.array((points[6], points[8], points[7])), den, thick, dt, verbose))
     pains.append(Pain(np.array((points[3], points[9], points[10])), den, thick, dt, verbose))
-    return(pains, fuelCM)
+
+    CM = np.array( [0., 0., 0.] )
+    totmass = 0.
+    for pain in pains:
+        CM += pain.calcCM() * pain.calcMass()
+        totmass += pain.calcMass()
+    CM /= totmass
+
+    # fuelCM = CM
+    fuelCM = np.array( [0., 0., 0.] )
+    
+    return(pains, fuelCM, CM, totmass)
     
     
     #=========================================================

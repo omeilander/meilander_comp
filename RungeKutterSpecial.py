@@ -5,6 +5,8 @@ Created on Mon Oct 28 14:21:13 2019
 
 @author: owen
 """
+
+import sys
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -12,7 +14,7 @@ import matplotlib.pyplot as plt
 #NEED AND INIT OF 8 (x,y,z,vx,vy,vz,theta,omega)
 
 class RungeKutter (object):
-    def __init__(self, eqs, verbose = False):
+    def __init__(self, eqs, verbose = 0):
         self.eqs = eqs
         self.ti = 0
         self.verbose = verbose
@@ -90,7 +92,12 @@ class RungeKutter (object):
                 c4 = self.eqs.dvals_dt(self.t + dt, self.vals + (c3 * dt))
                 self.vals[:] += (dt / 6.) * (c1 + 2 * c2 + 2 * c3 + c4)
                 
-#                print("theta = {} and omega = {}".format(self.vals[6], self.vals[7]))
+                if self.verbose >= 4:
+                    sys.stderr.write("==========================================\n")
+                    sys.stderr.write("At t={:7.2f}, θ={:.3g} and ω={:.3g}\n"
+                                     .format(self.t, self.vals[6], self.vals[7]))
+                    sys.stderr.write("==========================================\n\n")
+
 #==============================================================================
 #                 ct1 = self.eqs.domega_dt(self.t, self.vals)
 #                 ct2 = self.eqs.domega_dt(self.t + dt / 2., self.vals[6:] + (ct1 * (dt / 2.)))
