@@ -12,12 +12,11 @@ from FuelTank import FuelTank
 
 class Object(object):
     
-    def __init__(self, panes, air, fuel, dt, ang, verbose = False, init_quat = np.array((0., 0., 0., 1.))):
+    def __init__(self, panes, air, fuel, v0, dt, ang, verbose = False, init_quat = np.array((0., 0., 0., 1.))):
         self.panes = panes
         self.air = air
         self.fuel = fuel
-        xy = np.concatenate((self.air.r, self.air.v))
-        self.initvals = np.concatenate((xy, ang))
+        
         self.mTotPane = 0
         self.dt = dt
         for i in range(len(self.panes)):
@@ -33,6 +32,9 @@ class Object(object):
         # self.fTot_List = []
         self.fResistive_List = []
         # self.tList = []
+        
+        xy = np.concatenate((self.CMTot, v0))
+        self.initvals = np.concatenate((xy, ang))
         
         self.verbose = verbose
 #=============================================================================        
@@ -66,6 +68,7 @@ class Object(object):
         #return (Fg)
     
     def forceResistiveTot(self, v, theta):
+        vel = v + self.air.v
         fTot = np.zeros(3)
         
         for i in range(len(self.panes)):

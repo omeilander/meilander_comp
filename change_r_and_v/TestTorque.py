@@ -22,8 +22,9 @@ def main():
     den = 1
     thick = .1
     dt = .01
-    r = np.array((0., 0., 0.))
-    vo = np.array((0., 0., 0.))
+    r_air = np.array((0., 0., 0.))
+    v_air = np.array((0., 0., 0.))
+    v0 = np.array((0., 0., 0.))
     ang = np.array((.1, 0.))
     
     mf = 10.
@@ -34,9 +35,9 @@ def main():
     
     fuel = FuelTank(fuelCM, mf, burnTime, thrust)
 
-    air = Air(vo, r)
+    air = Air(v_air, r_air)
     
-    pointy = Object(pains, air, fuel, dt, ang, verbose)
+    pointy = Object(pains, air, fuel, v0, dt, ang, verbose)
     
     rk4 = RungeKutter(pointy)
     sols = rk4.solve(10, nkeep=30000)
