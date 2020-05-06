@@ -16,6 +16,8 @@ from matplotlib import pyplot as plt
 
 
 def main():
+    
+    
     verbose = 0
     
     den = 1
@@ -23,9 +25,9 @@ def main():
     dt = .01
     r = np.array((0., 0., 0.))
     vo = np.array((0., 0., 0.))
-    ang = np.array((.5, 0.))
+    ang = np.array((1., 0.))
 
-    tend = 10.
+    tend = 20.
     burnTime = 60.
     # burnTime = 60.
     # thrust = 118.

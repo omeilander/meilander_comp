@@ -57,7 +57,7 @@ class Object(object):
     def forceTot(self, v, theta, g = 9.8):
         Fg = np.array((0, -(self.mTot()) * g, 0))
         Fr = self.forceResistiveTot(v, theta)
-        #Fr = [0, 0, 0]
+#        Fr = [0, 0, 0]
         self.fResistive_List.append(np.sqrt(np.square(Fr[0]) + np.square(Fr[1] + np.square(Fr[2]))))
         
         thrust = self.rotate(theta, self.fuel.thrust(self.quat))
@@ -73,7 +73,7 @@ class Object(object):
         
         for i in range(len(self.panes)):
 #            print("fR on pain {} which has point 0 {}".format(i, self.panes[i].points[0]))
-            f = self.panes[i].calcForceResistive(v, 
+            f = self.panes[i].calcForceResistive(vel, 
                               self.air.denAir(self.CMTot[1]), self.air.mAir, theta)
             fTot += f
             if (self.verbose == True):
@@ -89,6 +89,7 @@ class Object(object):
             r = self.rotate(theta, self.panes[i].CM - self.CMTot)
             f = self.panes[i].calcForceResistive(v,self.air.denAir(self.CMTot[1]), 
                       self.air.mAir, theta)
+#            f = np.array((0, 0, 0))
             tor = np.cross(r, f)
             torTot += tor
             if (self.verbose == True):

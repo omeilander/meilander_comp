@@ -29,7 +29,7 @@ def main():
     
     mf = 10.
     burnTime = 60.
-    thrust = 118.
+    thrust = 218.
     
     pains, fuelCM = maybegood(den, thick, dt, verbose)
     
