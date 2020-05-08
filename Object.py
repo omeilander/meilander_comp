@@ -92,7 +92,7 @@ class Object(object):
         # thrust = self.rotate(theta, self.fuel.thrust(self.quat))
         # For now, force thrust to be down, which isn't completely realistic 
         # I chose to think about this as what the gimble on the engins
-        thrust = (self.fuel.thrust(self.quat))
+        thrust = self.rotate(theta, self.fuel.thrust(self.quat))
         if (self.verbose >= 2):
             print("\nv = [{:.3g}, {:.3g}, {:.3g}]".format(v[0], v[1], v[2]))
             tmptot = thrust + Fg + Fr

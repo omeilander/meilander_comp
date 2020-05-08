@@ -35,7 +35,7 @@ def main():
     dt = .01
     r = np.array((0., 0., 0.))
     vo = np.array((0., 0., 0.))
-    ang = np.array((.1, 0.))
+    ang = np.array((1., 0.))
 
     tend = 20.
     burnTime = 60.
@@ -43,7 +43,7 @@ def main():
     # thrust = 118.
     # thrust = 180.
     
-    pains, fuelCM, frameCM, framemass = maybegood(den, thick, dt, verbose)
+    pains, fuelCM, frameCM, framemass = badstuff(den, thick, dt, verbose)
     print("Out of maybegood, fuelCM={}, frameCM={}, framemass={}".format(fuelCM, frameCM, framemass))
     
     mf = 2. * framemass
@@ -104,9 +104,10 @@ def main():
     #plt.ylim(-2,2)
     #plt.xlim(2600, 2800)
     
-#     ax.tick_params(labelsize=14)
-    fig.suptitle("theta initial = 0.1", fontsize=16)
-    plt.subplots_adjust(bottom = 0.1, top = 0.9, left = 0.1, right = 0.9, wspace = 5.25, hspace = 5.35)
+#
+#    ax.tick_params(labelsize=14)
+#    fig.suptitle("theta initial = 0.1", fontsize=16)
+#    plt.subplots_adjust(bottom = 0.1, top = 0.9, left = 0.1, right = 0.9, wspace = 5.25, hspace = 5.35)
 
 #     fig.set_tight_layout(True)
     
