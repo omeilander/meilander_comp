@@ -26,7 +26,7 @@ class PaneVisualizer(object):
 
     def show(self):
         import physvis as vis
-        self.faces = vis.faces(self.vertices)
+        self.faces = vis.faces(self.vertices, color = [1, 1, 1])
 
         # Right now I'm depending on the fact that physvis will
         #  still give the user the ability to rotate, etc.

@@ -35,7 +35,7 @@ def main():
     dt = .01
     r = np.array((0., 0., 0.))
     vo = np.array((0., 0., 0.))
-    ang = np.array((1., 0.))
+    ang = np.array((.1, 0.))
 
     tend = 20.
     burnTime = 60.
@@ -81,7 +81,7 @@ def main():
     
     #Fr = pointy.fResistive_List
     
-    fig, ax = plt.subplots(2,2)
+    fig, ax = plt.subplots(2,2, figsize = (8, 6))
     
     ax[0,0].plot(sols[:,0], sols[:,2], linestyle="-", marker="",markersize=10, color="red")
     ax[0,1].plot(sols[:,0], sols[:,5], linestyle="-", marker="",markersize=10, color="red")
@@ -105,7 +105,9 @@ def main():
     #plt.xlim(2600, 2800)
     
 #     ax.tick_params(labelsize=14)
-#     ax.set_title("phi vs t", fontsize=20)
+    fig.suptitle("theta initial = 0.1", fontsize=16)
+    plt.subplots_adjust(bottom = 0.1, top = 0.9, left = 0.1, right = 0.9, wspace = 5.25, hspace = 5.35)
+
 #     fig.set_tight_layout(True)
     
     fig.show()
@@ -137,7 +139,17 @@ def badstuff(den, thick, dt, verbose):
     pains.append(Pain(np.array((points[1], points[3], points[2])), den, thick, dt, verbose))
     pains.append(Pain(np.array((points[0], points[5], points[4])), den, thick, dt, verbose))
     pains.append(Pain(np.array((points[4], points[5], points[6])), den, thick, dt, verbose))
-    return(pains, fuelCM)
+    
+    CM = np.array( [0., 0., 0.] )
+    totmass = 0.
+    for pain in pains:
+        CM += pain.calcCM() * pain.calcMass()
+        totmass += pain.calcMass()
+    CM /= totmass
+
+    fuelCM = np.array( [0., 0., 0.] )
+    
+    return(pains, fuelCM, CM, totmass)
         
 def maybegood(den, thick, dt, verbose):
     fuelCM = np.array((0., 1., 0.))

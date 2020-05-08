@@ -87,14 +87,12 @@ class Object(object):
     def forceTot(self, v, theta, g = 9.8):
         Fg = np.array((0, -(self.mTot()) * g, 0))
         Fr = self.forceResistiveTot(v, theta)
-        #Fr = [0, 0, 0]
-        self.fResistive_List.append(np.sqrt(np.square(Fr[0]) + np.square(Fr[1] + np.square(Fr[2]))))
 
         # Not rotating thrust twice because self.quat is always the identity quaternion
         # thrust = self.rotate(theta, self.fuel.thrust(self.quat))
         # For now, force thrust to be down, which isn't completely realistic 
         # I chose to think about this as what the gimble on the engins
-        thrust = self.fuel.thrust(self.quat)
+        thrust = (self.fuel.thrust(self.quat))
         if (self.verbose >= 2):
             print("\nv = [{:.3g}, {:.3g}, {:.3g}]".format(v[0], v[1], v[2]))
             tmptot = thrust + Fg + Fr
