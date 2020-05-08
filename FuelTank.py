@@ -1,9 +1,15 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri Jan 31 14:18:21 2020
+This file is a part of mei_comp_2020
 
-@author: omeil
+This file creates the fuel tank of the rocket. It needs the CM of 
+the fuel, total mass, burn time, and thrust of the fuel tank. It 
+can calculate the direction of the thrust along with keeping track 
+of how long the engine would continue to run.
+
+Requires the use of numpy.
 """
+#==============================================================================
 import numpy as np
 import quat
 

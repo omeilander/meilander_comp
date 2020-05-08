@@ -1,15 +1,25 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue Feb 18 19:01:52 2020
+This file is a part of mei_comp_2020
 
-@author: omeil
+This is the executable file in mei_comp_2020. It serves as a 
+package that models air resistance as a ball bearing model and 
+tests the stability of objects. It sets up and creates all objects 
+needed including the triangular panes, fuel tank, air model, and 
+RK4 integrator. The result is a 3D model showing the velocity and 
+torques on each pane along with graphs of the y position and velocitiy
+along with the angle from plum with the instantaneous change in angle
+all against time.
+
+A verbose function is available when verbose is set equal to 1.
+
+Requires the use of numpy and physvis. 
 """
-
+#==============================================================================
 import numpy as np
 from Pane import Pane as Pain
 from Air import Air
 from Object import Object
-#from imgointtomessup import Object
 from FuelTank import FuelTank
 from RungeKutterSpecial import RungeKutter
 from matplotlib import pyplot as plt
@@ -49,7 +59,7 @@ def main():
 
     air = Air(vo, r)
     
-    pointy = Object(pains, air, fuel, dt, ang, verbose)
+    pointy = Object(pains, air, fuel, dt, ang, verbose) 
 
     print("Initialized rocket.  Structure mass = {:.3g}, fuel mass = {:.3g}, tot mass = {:.3g}"
           .format(framemass, fuel.mf, pointy.mTot()))
@@ -104,7 +114,12 @@ def main():
 
 
     
-    
+"""
+These next two definitions are two attempts to create sets of panes and 
+therefore the shape of the object. A density, thickness, and dt is needed. 
+
+More of suce definitions can be added to test other colections of planes.
+"""    
 def badstuff(den, thick, dt, verbose):  
     fuelCM = np.array((0., 0.5, 0.))
     points = np.empty((9,3))

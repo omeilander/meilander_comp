@@ -1,13 +1,18 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Jan 27 14:16:10 2020
+This file is a part of mei_comp_2020
 
-@author: omeil
+This file creates the triangular panes that make the object. 
+Three (x, y, z) locations of the three vertices of the panes are 
+needed in a 2D list. The order of points needs to be such that the 
+cross product of  (point[1] – point[0]) and (point[2] – point[0]) 
+is away from the center of the object. A density, thickness, and dt 
+is also needed.
+
+Requires the use of numpy.
 """
+#==============================================================================
 import numpy as np
-#import quat
-
-s = 0
 
 class Pane(object):
     def __init__(self, location, density, thickness, dt, verbose = 0):
@@ -22,6 +27,11 @@ class Pane(object):
         self.CM = self.calcCM()
         self.nHat = self.calcNHat()
         
+#==============================================================================
+
+    """These definitions are used within this file's init values 
+    to calculate needed values"""
+
     def calcArea(self):
         return(.5 * self.mag(np.cross((self.points[1] - self.points[0]), (self.points[2] - self.points[0]))))
         
@@ -37,12 +47,12 @@ class Pane(object):
         n = np.cross((self.points[1] - self.points[0]), (self.points[2] - self.points[0]))
         magN = np.sqrt(np.square(n[0]) + np.square(n[1]) + np.square(n[2]))
         return(n / magN)
-    
-#    def rotateNHat(self, q):
-#        self.nHat = quat.quaternion_rotate(self.nHat, q)
-    
+        
+#==============================================================================
+        
+    """this definition is called by Object.py to calculate the force on the pane"""
+
     def calcForceResistive(self, vel, denAir, mAir, theta):
-#        vel = -vel
         nHat = self.rotate(theta, self.nHat)
 
         velMag = np.sqrt(np.square(vel[0]) + np.square(vel[1]) + np.square(vel[2]))
@@ -64,12 +74,12 @@ class Pane(object):
         useableArea = (self.area * dot)
         numParticles = useableArea * (self.dt * velMag) * denAir
         dpp = -2 * velMag * np.dot(velHat, nHat) * nHat * mAir * numParticles
-        
 
-
-        
         return (dpp / self.dt)
     
+#==============================================================================
+
+    """These are definitions to be used within this file for ease of use"""
     
     def rotate(self, theta, xy):
         return (np.array((((xy[0] * np.cos(theta)) - (xy[1] * np.sin(theta))), 

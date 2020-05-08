@@ -1,14 +1,18 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Jan 27 14:17:07 2020
+This file is a part of mei_comp_2020
 
-@author: omeil
+This file is the workhorse of the project. It is passed a list 
+of pane objects along with the air, fuel, dt, and the initial angle 
+information (a list of angle and d angle/ dt). It is currently only 
+able to be used with an object with all of the center of masses of 
+their panes on the x-y axis with a 2D rotation. It includes a 
+dvals_dt function for use with an RK4 integrator. 
+
+Requires the use of numpy and physvis.
 """
+#==============================================================================
 import numpy as np
-from Pane import Pane
-from Air import Air
-from FuelTank import FuelTank
-#import quat
 
 class Object(object):
     
@@ -30,14 +34,12 @@ class Object(object):
         
         self.quat = np.copy(init_quat)
         
-        # self.fTot_List = []
-        self.fResistive_List = []
-        # self.tList = []
-        
         self.verbose = verbose
 
-    #=============================================================================        
+#=============================================================================        
 
+    """these definitions are for use in the init statement to find needed values"""
+    
     def mTot(self):
         return (self.mTotPane + self.fuel.mf)
       
@@ -53,7 +55,35 @@ class Object(object):
         return(self.CMTotPanes + (self.fuel.CM * self.fuel.mf) / self.mTot())
     
     
-#=============================================================================                
+#============================================================================= 
+               
+    """This dvals_dt statement is for use by a RK4 program"""
+    
+    def dvals_dt(self, t, vals):
+        ders = np.empty(8)
+        ders[0:3] = vals[3:6]
+
+        force = self.forceTot(vals[3:6], vals[6])
+        ders[3:6] = force / self.mTot()
+
+        ders[6] = vals[7]
+        
+        I = self.calcITotal()
+        Idot = self.calcIdotTotal(vals[3:6])
+        
+        T = self.torResistiveTot(vals[3:6], vals[6])
+        
+        ders[7] = T[2] / I - (vals[7] * Idot / I)
+        if (self.verbose >= 2):
+            print("theta = {:.3g} and omega = {:.3g} T = {:.3g} and I = {:.3g} and Idot = {:.3g}\n".format(vals[6], vals[7], T[2], I, Idot))
+        
+        return ders
+        
+#=============================================================================  
+        
+    """these definitions are used by the dvals_dt and calls on the Pane.py 
+    to calculate the total of the forces on the object"""
+    
     def forceTot(self, v, theta, g = 9.8):
         Fg = np.array((0, -(self.mTot()) * g, 0))
         Fr = self.forceResistiveTot(v, theta)
@@ -62,7 +92,8 @@ class Object(object):
 
         # Not rotating thrust twice because self.quat is always the identity quaternion
         # thrust = self.rotate(theta, self.fuel.thrust(self.quat))
-        # For now, force thrust to be down, which isn't realistic, but whatever
+        # For now, force thrust to be down, which isn't completely realistic 
+        # I chose to think about this as what the gimble on the engins
         thrust = self.fuel.thrust(self.quat)
         if (self.verbose >= 2):
             print("\nv = [{:.3g}, {:.3g}, {:.3g}]".format(v[0], v[1], v[2]))
@@ -91,6 +122,10 @@ class Object(object):
         return fTot 
     
 #=============================================================================
+        
+    """these definitions are used by the dvals_dt and calls on the Pane.py 
+    to calculate the total of the torques on the object"""
+    
     def torResistiveTot(self, v, theta):
         if (self.verbose >= 2):
             print("\ntheta = {}".format(theta))
@@ -129,6 +164,7 @@ class Object(object):
         return ITot    
     
     def calcIdotTotal(self, v):
+        """This will be seful for 3D rotations"""
         IdotTot = 0
 #        rdot = self.mag(v)
 #        for i in range(len(self.panes)):
@@ -140,6 +176,10 @@ class Object(object):
         
 
 #==============================================================================
+        
+    """these definitions rotate vectors. the first is 3d and uses quaternions 
+    and the second is for current use for 2D rotations"""
+    
 #     def rotate(self, alpha):
 #         self.quat = calcQuat(alpha)
 #         for i in range(len(self.panes)):
@@ -152,44 +192,10 @@ class Object(object):
                          ((xy[0] * np.sin(theta)) + (xy[1] * np.cos(theta))), 0)))
         
 #=============================================================================    
-    def dvals_dt(self, t, vals):
-        ders = np.empty(8)
-        ders[0:3] = vals[3:6]
 
-        force = self.forceTot(vals[3:6], vals[6])
-        # self.fTot_List.append(np.sqrt(np.square(force[0]) + np.square(force[1]) + np.square(force[2])))
-        # self.tList.append(self.tList[-1] + self.dt)
-        ders[3:6] = force / self.mTot()
-
-        ders[6] = vals[7]
         
-        I = self.calcITotal()
-        Idot = self.calcIdotTotal(vals[3:6])
-        
-        T = self.torResistiveTot(vals[3:6], vals[6])
-        
-        ders[7] = T[2] / I - (vals[7] * Idot / I)
-        if (self.verbose >= 2):
-            print("theta = {:.3g} and omega = {:.3g} T = {:.3g} and I = {:.3g} and Idot = {:.3g}\n".format(vals[6], vals[7], T[2], I, Idot))
-        
-        return ders
-        
-#==============================================================================
-#     def domega_dt(self, t, vals):
-#         derst = np.empty(2)
-#         ders[0] = vals[7]
-#         
-#         I = self.calcITotal()
-#         Idot = self.calcIdotTotal(vals[3:6])
-#         
-#         T = self.torResistiveTot(vals[3:6])
-#         
-#         ders[1] = self.mag((T / I) - (vals[7] * Idot / I))
-#         
-#         return ders
-#==============================================================================
+    """These are definitions to be used within this file for ease of use"""
     
-#=============================================================================  
     def mag(self, r):
         R = 0
         for i in range(len(r)):

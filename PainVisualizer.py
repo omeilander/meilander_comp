@@ -1,6 +1,14 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
+"""
+This file is a part of mei_comp_2020
 
+This file creates a physvis object to diplay the object, its torques, 
+and its velocities.
+
+Requires the use of numpy and physvis.
+"""
+#==============================================================================
 import sys
 import math
 import numpy

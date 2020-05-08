@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Sun Feb 16 17:27:40 2020
+This is a multi-use quaternion manipulation 
+program for continuing use for 3D rotations. 
 
-@author: owen
+Code sourced from Physvis
 """
+#==============================================================================
 import numpy
     
 def create_quaternion(theta, l):

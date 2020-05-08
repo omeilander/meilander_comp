@@ -1,11 +1,20 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Mon Oct 28 14:21:13 2019
+This is a multi-use RK4 integrator. It can be used to find the motion 
+of an object using only it’s acceleration. An object with a set of 
+initial values (first and second derivatives of equations) and a 
+dvals_dt(self, t, vals) definition is needed to run. The solve definition 
+needs an ending time and an nkeep and will return one of the following:
+    
+If nkeep = 1 it will only return the last set of values
 
-@author: owen
+If nkeep = 0 it will return every set of values calculated
+
+If nkeep = another positive number other than 0 and 1 it will return
+that many sets of values
 """
-
+#==============================================================================
 import sys
 import numpy as np
 import matplotlib.pyplot as plt

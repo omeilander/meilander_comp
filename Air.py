@@ -1,10 +1,17 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Jan 27 14:17:41 2020
+This file is a part of mei_comp_2020
 
-@author: omeil
+This file creates the air that the object is moving through. 
+The starting position and the velocity of the air is passed to 
+create the model of air. It is called by Object.py in its 
+dvals_dt function and uses the y-position to determine the 
+density of air and passes the information back to calculate the
+air resistance.
+
+Requires the use of numpy.
 """
-
+#==============================================================================
 import numpy as np
 
 class Air(object):
